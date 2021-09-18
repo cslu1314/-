@@ -1,0 +1,52 @@
+jmp start
+
+mytext db 'L',0x07,'a',0x07,'b',0x07,'e',0x07,'l',0x07,' ',0x07,'o',0x07,\
+    'f',0x07,'f',0x07,'s',0x07,'e',0x07,'t',0x07,':',0x07
+
+start:
+  mov ax, 0x7c0      ;设置数据段基地址ds
+  mov ds, ax
+   
+  mov ax, 0xb800     ;设置附加段基地址es，指向显存的段地址
+  mov es, ax
+  
+  cld
+  mov si, mytext           ;si    ds:si
+  mov di, 0                ;di    es:di
+  mov cx, (start-mytext)/2
+  rep movsw
+  
+  
+  ;得到标号所代表的的汇编地址
+  mov ax, number   ;标号number是个汇编地址，在这里相当于是一个立即数，
+  
+  ;分解各个数位
+  mov bx, ax
+  mov cx, 5           ;循环次数
+  mov si, 10          ;除数
+digit:
+	xor dx, dx
+	div si
+	mov [bx], dl
+	inc bx              ;bx+1
+	loop digit
+  
+	;开始显示各个位数
+	;mov cx, 5
+	mov bx, number
+	mov si, 4
+show:
+	mov al, [bx+si]
+	add al, 0x30
+	mov ah, 04
+	mov [es:di], ax
+	add di, 2
+	dec si
+	jns show
+  
+  jmp $
+  
+number db 0, 0, 0, 0, 0
+  
+  times 510-($-$$) db 0
+  db 0x55, 0xaa
