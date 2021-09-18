@@ -1,0 +1,46 @@
+		;就地反转字符串内容
+		jmp start
+string db 'abcdefghijklmnopqrstuvwxyz'
+
+start:
+		mov ax, 0x7c0			;设置数据段的段基地址
+		mov ds, ax
+		
+		mov ax, cs				;设置栈段的段基地址，，英特尔处理器不允许在两个段寄存器之间直接传送内容，所以这里使用了通用寄存器ax
+		mov ss, ax
+		mov sp, 0				;初始化栈顶指针
+		
+		mov cx, start-string	;循环次数
+		mov si, string			;数据区首地址（基地址）
+lppush:
+		mov al, [si]
+		push ax
+		inc si
+		loop lppush				;循环压栈
+		
+		mov cx, start-string
+		mov di, string
+lppop:
+		pop ax
+		mov [di], al
+		inc di
+		loop lppop				;循环出栈
+		
+		
+		mov ax, 0xb800
+		mov es, ax
+		mov cx, start-string
+		mov di, 0
+		mov si, string
+show:
+		mov al, [si]
+		mov byte [es:di], al
+		inc di
+		mov byte [es:di], 0x07
+		inc di
+		inc si
+		loop show
+		
+		jmp $
+		times 510-($-$$) db 0
+		db 0x55, 0xaa
