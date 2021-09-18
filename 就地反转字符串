@@ -1,0 +1,39 @@
+				;就地反转字符串内容
+		jmp start
+string db 'abcdefghijklmnopqrstuvwxyz'
+
+start:
+		mov ax, 0x7c0			;设置数据段的段基地址
+		mov ds, ax
+		
+		mov bx, string			;数据区首选地址
+		mov si, 0				;正向索引
+		mov di, start-string-1	;反向索引
+rever:
+		mov ah, [bx+si]
+		mov al, [bx+di]
+		mov [bx+si], al
+		mov [bx+di], ah			;以上4行用于交换首位数据
+		inc si
+		dec di
+		cmp si, di
+		jl rever				;if si<di 则进行跳转
+		
+		
+		mov ax, 0xb800
+		mov es, ax
+		mov cx, start-string
+		mov di, 0
+		mov si, string
+show:
+		mov al, [si]
+		mov byte [es:di], al
+		inc di
+		mov byte [es:di], 0x07
+		inc di
+		inc si
+		loop show
+		
+		jmp $
+		times 510-($-$$) db 0
+		db 0x55, 0xaa
