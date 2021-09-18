@@ -1,0 +1,45 @@
+		;以下开始从1加到1000
+        xor dx,dx							;累加结果的高16位
+		xor ax,ax							;累加结果的低16位
+		
+		mov si,1							;要累加的起始数字
+nextc:		
+		add ax,si
+		adc dx,0							;和0相加并加上进位
+		inc si
+		cmp si,1000
+		jbe nextc							;低于等于1000则转移去继续累加
+		
+		;以下准备栈段，为栈操作做准备
+		mov bx,cs							;设置栈段（和代码段相同）
+		mov ss,bx
+		mov sp,0							;初始化栈指针
+		
+		;以下开始分解数位。只适用于1加到1000的和。更大的数字会出问题。
+		mov si,10							;除数
+		xor cx,cx							;位数统计
+gotod:
+		inc cx
+		div si
+		push dx								;余数压栈
+		xor dx,dx							;准备下一次除法的被除数高16位。
+		cmp ax,0
+		jne gotod
+		
+		;以下显示各个数位，用到了上面的CX寄存器
+		mov ax,0xb800						;令ds指向显存
+		mov ds,ax
+		mov bx,0
+		
+displ:
+		pop dx								;反向弹出数位
+		add dl,0x30							;转换为数字字符
+		mov [bx],dl							;传送到显存内
+		mov byte [bx+1],0x07						;颜色属性，黑底白字
+		add bx,2							;下一个显存位置
+		loop displ
+				 
+		jmp $
+
+		times 510-($-$$) db 0
+		db 0x55,0xaa
