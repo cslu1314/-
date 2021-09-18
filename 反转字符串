@@ -1,4 +1,3 @@
-		;就地反转字符串内容
 		jmp start
 string db 'abcdefghijklmnopqrstuvwxyz'
 
