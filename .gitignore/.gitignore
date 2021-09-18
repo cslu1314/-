@@ -1,0 +1,66 @@
+	;从1加到100并显示结果
+	jmp start
+
+message db '1+2+3+...+100='		;等同于 db '1', '+', '2', '+', '3', '+', '.', '.', '.', '+', '1', '0', '0', '='
+
+start:
+	mov ax, 0x7c0
+	mov ds, ax
+	
+	mov ax, 0xb800
+	mov es, ax
+	
+	;以下显示字符串
+	mov si, message
+	mov di, 0
+	mov cx, start-message
+	
+showmsg:
+	mov al, [si]
+	mov [es:di], al
+	inc di
+	mov byte [es:di], 0x07
+	inc di
+	inc si
+	loop showmsg
+	
+	
+	;以下计算1-100的和，和存储于ax中
+	xor ax, ax
+	mov cx, 1
+summate:
+	add ax, cx
+	inc cx
+	cmp cx, 100		;将cx的值和100进行比较
+	jle summate		;jump if little or equal 即：if cx小于或者等于100则跳转
+	
+	
+	
+	;以下分解累加和的各个数位
+	xor cx, cx
+	mov ss, cx		;设置栈段的段基地址为0
+	mov sp, cx		;设置栈段的段偏移地址为0
+	
+	mov bx, 10		;10作为除数
+	xor cx, cx		;cx记录分解了多少个数位，即ax是几位数
+decompo:
+	inc cx
+	xor dx, dx		;dx和ax一起组成了被除数
+	div bx			
+	add	dl, 0x30
+	push dx			;在16位的8086处理器上，压栈和出栈操作的长度都必须是1个字
+	cmp ax, 0		;将ax的值和0比较
+	jne decompo		;不是0就继续循环
+	
+shownum:
+	pop dx
+	mov [es:di], dl
+	inc di
+	mov byte [es:di], 0x07
+	inc di
+	loop shownum	;循环的次数在cx中
+	
+	jmp $
+	
+	times 510-($-$$) db 0
+	db 0x55, 0xaa
