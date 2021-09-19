@@ -29,8 +29,8 @@ put_string:                              ;显示串(0结尾)。
                                          ;输入：DS:BX=串地址
          mov cl,[bx]
          or cl,cl                        ;cl=0 ?如果cl是0则跳转到37行
-         jz .exit                         
-         call put_char
+         jz .exit                        
+         call put_char					;不是0则把该字符放到显存的内存单元中，再接着继续下一轮循环
          inc bx                          ;下一个字符 
          jmp put_string
 
@@ -155,7 +155,7 @@ put_char:                                ;显示一个字符
          retf                             ;转移到代码段2执行 
          
   continue:
-         mov ax,[es:data_2_segment]       ;段寄存器DS切换到数据段2 
+         mov ax,[es:data_2_segment]       ;段寄存器DS切换到数据段2，即data_2
          mov ds,ax
          
          mov bx,msg1
