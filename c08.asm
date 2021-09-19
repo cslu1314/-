@@ -73,7 +73,7 @@ put_char:                                ;显示一个字符
          jmp .set_cursor
 
  .put_0a:  ;是否是换行符		
-         8cmp cl,0x0a                     ;换行符？  如果不是换行符，就转到81行执行，如果是换行符，就继续执行78行
+         cmp cl,0x0a                     ;换行符？  如果不是换行符，就转到81行执行，如果是换行符，就继续执行78行
          jnz .put_other                  ;不是，那就正常显示字符 
          add bx,80
          jmp .roll_screen
