@@ -29,7 +29,7 @@ put_string:                              ;显示串(0结尾)。
                                          ;输入：DS:BX=串地址
          mov cl,[bx]
          or cl,cl                        ;cl=0 ?如果cl是0则跳转到37行
-         jz .exit                        ;是0，返回主程序 
+         jz .exit                         
          call put_char
          inc bx                          ;下一个字符 
          jmp put_string
