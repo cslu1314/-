@@ -1,0 +1,13 @@
+        mov ax,0x2000
+        mov ds,ax
+
+        mov eax,0xffff
+        mov dl,[eax]
+
+        mov edx,[eax]			;这里是不可以访问的，因为访问的范围超出了偏移地址 FFFF
+
+        cli
+        hlt
+                             
+        times 510-($-$$) db 0
+                         db 0x55,0xaa
