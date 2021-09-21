@@ -40,10 +40,10 @@
          ;以下进入保护模式... ...
 
          mov cx,00000000000_01_000B         ;加载数据段选择子(0x01)
-         mov ds,cx
+         mov ds,cx								;ds的是段选择子，但是ds的描述符高速选择器中存储的是 目标描述符的信息
 
          ;以下在屏幕上显示"Protect mode OK."
-         mov byte [0x00],'P'
+         mov byte [0x00],'P'				;这里使用ds的描述符高速选择器中的目标描述符的基地址(0xb8000)+[0x00]来访问内存
          mov byte [0x02],'r'
          mov byte [0x04],'o'
          mov byte [0x06],'t'
